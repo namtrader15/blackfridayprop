@@ -1,0 +1,334 @@
+/* ===============================
+   effects.css - bản nặng đô nhưng đàng hoàng
+   Chỉ lo hiệu ứng, không phá layout gốc
+   =============================== */
+
+/* Tôn trọng người dùng không thích motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* 1. Page load: fade + slide lên + blur nhẹ (chỉ cho phần .page, không đụng modal) */
+.page {
+  opacity: 0;
+  transform: translateY(10px);
+  filter: blur(6px);
+  animation: pageEnter 0.85s ease-out forwards;
+}
+
+@keyframes pageEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(14px);
+    filter: blur(8px);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(1px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+/* 2. Hero: background glow động tạo cảm giác “cao cấp” */
+.hero {
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: -40%;
+  background:
+    radial-gradient(circle at 10% 0%, rgba(59,130,246,0.25), transparent 60%),
+    radial-gradient(circle at 90% 0%, rgba(244,114,182,0.25), transparent 60%),
+    radial-gradient(circle at 50% 100%, rgba(56,189,248,0.25), transparent 60%);
+  mix-blend-mode: screen;
+  opacity: 0.9;
+  pointer-events: none;
+  z-index: -1;
+  animation: heroGlow 14s ease-in-out infinite alternate;
+}
+
+@keyframes heroGlow {
+  0% {
+    transform: translate3d(-4%, 2%, 0) scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translate3d(4%, -3%, 0) scale(1.05);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(0, 4%, 0) scale(1.03);
+    opacity: 0.8;
+  }
+}
+
+/* 3. Scroll reveal: mọi thứ chui lên mượt khi user kéo xuống */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px) scale(0.98);
+  filter: blur(8px);
+  transition:
+    opacity 0.7s ease-out,
+    transform 0.7s ease-out,
+    filter 0.7s ease-out;
+  will-change: opacity, transform, filter;
+}
+
+.reveal.reveal-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  filter: blur(0);
+}
+
+/* delay nhẹ cho cảm giác xếp lớp */
+.reveal.delay-1 {
+  transition-delay: 0.08s;
+}
+.reveal.delay-2 {
+  transition-delay: 0.16s;
+}
+
+/* 4. CTA: “thở” + vệt sáng chạy ngang */
+.btn-primary,
+#deal-continue-btn {
+  position: relative;
+  overflow: hidden;
+  z-index: 0;
+}
+
+@keyframes ctaPulse {
+  0% {
+    transform: translateY(0) scale(1);
+    box-shadow: 0 18px 45px rgba(8,47,73,0.9);
+  }
+  50% {
+    transform: translateY(-1px) scale(1.05);
+    box-shadow: 0 26px 60px rgba(8,47,73,1);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    box-shadow: 0 18px 45px rgba(8,47,73,0.9);
+  }
+}
+
+/* CTA chính thở nhanh hơn */
+.btn-primary {
+  animation: ctaPulse 2.6s ease-in-out infinite;
+}
+
+/* CONFIRMO thở chậm hơn */
+#deal-continue-btn {
+  animation: ctaPulse 3.2s ease-in-out infinite;
+}
+
+/* Hover thì dừng pulse để user thấy mình đang điều khiển */
+.btn-primary:hover,
+#deal-continue-btn:hover {
+  animation: none;
+}
+
+/* Shine chạy ngang */
+.btn-primary::before,
+#deal-continue-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    120deg,
+    rgba(255,255,255,0.22),
+    rgba(255,255,255,0.04),
+    transparent
+  );
+  transform: translateX(-140%);
+  pointer-events: none;
+  z-index: -1;
+  animation: buttonShine 3.6s ease-in-out infinite;
+}
+
+@keyframes buttonShine {
+  0% {
+    transform: translateX(-140%);
+    opacity: 0;
+  }
+  35% {
+    transform: translateX(0%);
+    opacity: 1;
+  }
+  55% {
+    transform: translateX(120%);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateX(140%);
+    opacity: 0;
+  }
+}
+
+/* 5. Làm gói 100k trong bảng pricing nổi bật hơn */
+.pricing-table {
+  position: relative;
+}
+
+/* Dòng nổi bật cho 100k */
+.pricing-table tbody tr.row-featured {
+  background:
+    radial-gradient(circle at 0 0, rgba(56,189,248,0.16), rgba(15,23,42,0.98));
+  box-shadow: 0 0 0 1px rgba(56,189,248,0.7);
+  transform-origin: center;
+  animation: featuredRow 5s ease-in-out infinite;
+}
+
+.pricing-table tbody tr.row-featured:hover {
+  animation: none;
+  transform: translateY(-1px) scale(1.01);
+}
+
+/* Badge MOST POPULAR nằm gọn trong ô */
+.most-popular-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0.5rem;
+  padding: 0.18rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  background: rgba(34,197,94,0.16);
+  border: 1px solid rgba(34,197,94,0.85);
+  color: #bbf7d0;
+  white-space: nowrap;
+}
+
+
+/* 6. Spotlight dưới phần deal calculator để kéo mắt xuống preview giá */
+.deal-section {
+  position: relative;
+  overflow: hidden;
+}
+
+.deal-section::before {
+  content: "";
+  position: absolute;
+  width: 480px;
+  height: 480px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(56,189,248,0.16), transparent 65%);
+  filter: blur(2px);
+  top: -140px;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0.9;
+  pointer-events: none;
+  z-index: -1;
+  animation: spotlightMove 18s ease-in-out infinite alternate;
+}
+
+@keyframes spotlightMove {
+  0% {
+    transform: translate(-40%, -4%) scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translate(-50%, 4%) scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-60%, -2%) scale(1.05);
+    opacity: 0.8;
+  }
+}
+
+/* 7. Card quan trọng hơi "float" khi hover */
+.hero-card,
+.pricing-card,
+.deal-panel,
+.card,
+.step,
+.cta {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.hero-card:hover,
+.pricing-card:hover,
+.deal-panel:hover,
+.card:hover,
+.step:hover,
+.cta:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 22px 50px rgba(0,0,0,0.9);
+}
+
+/* 8. Section title có gạch phát sáng */
+.section-title {
+  position: relative;
+  display: inline-block;
+  padding-bottom: 0.35rem;
+}
+
+.section-title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: 100%;
+  background: linear-gradient(to right, #22d3ee, #f97316, #a855f7);
+  opacity: 0.9;
+  transform-origin: left;
+  animation: titleGlow 3.2s ease-in-out infinite;
+}
+
+@keyframes titleGlow {
+  0% {
+    transform: scaleX(0.4);
+    opacity: 0.4;
+  }
+  50% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleX(0.4);
+    opacity: 0.4;
+  }
+}
+
+/* 9. Highlight section khi nhảy tới anchor (#how, #pricing, ...) */
+.section-highlight {
+  box-shadow:
+    0 0 0 1px rgba(56,189,248,0.7),
+    0 0 40px rgba(56,189,248,0.5);
+  border-radius: 20px;
+  transition: box-shadow 0.5s ease-out;
+}
+
+.section-highlight-fade {
+  animation: sectionHighlight 1.4s ease-out forwards;
+}
+
+@keyframes sectionHighlight {
+  0% {
+    box-shadow:
+      0 0 0 1px rgba(56,189,248,0.9),
+      0 0 40px rgba(56,189,248,0.7);
+  }
+  100% {
+    box-shadow:
+      0 0 0 0 rgba(56,189,248,0),
+      0 0 0 rgba(56,189,248,0);
+  }
+}
